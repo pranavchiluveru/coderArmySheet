@@ -127,6 +127,7 @@ struct Node
     }
 };
 */
+//Approach 1 : using recursion TC=O(N) SC=O(N)
 void pre(Node* root,vector<int> &v)
 {
     if(!root)
@@ -142,5 +143,32 @@ vector <int> preorder(Node* root)
   // Your code here
   vector<int> v;
   pre(root,v);
+  return v;
+}
+
+
+
+
+//Approach 2 :Morris Traversal TC=O(N) SC=O(1)
+vector <int> preorder(Node* root)
+{
+  // Your code here
+  vector<int> v;
+  while(root)
+  {
+      v.push_back(root->data);
+      if(root->left)
+      {
+          Node* curr=root->left;
+          while(curr->right)
+            curr=curr->right;
+          curr->right=root->right;
+          root=root->left;
+      }
+      else
+      {
+          root=root->right;
+      }
+  }
   return v;
 }
