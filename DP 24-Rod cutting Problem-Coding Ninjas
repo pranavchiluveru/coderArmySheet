@@ -1,0 +1,80 @@
+#include<bits/stdc++.h>
+/*Memoization TC=O(i*sum) SC=O(i*sum)+O(sum)
+//find(i,n)implies till index i what is the maximum profit i can earn
+int find(int i,int sum,vector<int> &price,vector<vector<int>> &dp)
+{
+	if(i==0)//index 0 has length 1,if sum =6 then we can cut rod into 6 pieces of length 1 ==> profit=6*price[0]
+	{
+		return sum*price[0];
+	}
+	if(dp[i][sum]!=-1) return dp[i][sum];
+	int exclude=find(i-1,sum,price,dp);
+	int include=INT_MIN;
+	if(i+1<=sum)//index 1 has length 2 ,index 2 has length 3 and so on...
+		include=price[i]+find(i,sum-i-1,price,dp);
+	return dp[i][sum]=max(exclude,include);
+}
+
+*/
+int cutRod(vector<int> &price, int n)
+{
+	// Write your code here.
+	//vector<vector<int>> dp(n,vector<int>(n+1,-1));
+	//return find(n-1,n,price,dp);
+	/*Tabulation TC=O(n*n) SC=O(n*n)
+	vector<vector<int>> dp(n,vector<int>(n+1,0));
+	for(int j=1;j<=n;j++)
+		dp[0][j]=j*price[0];
+	for(int i=1;i<n;i++)
+	{
+		for(int j=1;j<=n;j++)
+		{
+			int exclude=dp[i-1][j];
+			int include=INT_MIN;
+			if(i+1<=j)
+				include=price[i]+dp[i][j-i-1];
+			dp[i][j]=max(exclude,include);
+		}
+	}
+	return dp[n-1][n];
+	*/
+
+	/*Space optimization TC=O(n*n) SC=O(n)+O(n) : 2 dp arrays
+	vector<int> dp(n+1,0);
+	vector<int> dummy(n+1);
+	for(int j=1;j<=n;j++)
+		dummy[j]=j*price[0];
+	for(int i=1;i<n;i++)
+	{
+		for(int j=1;j<=n;j++)
+		{
+			int exclude=dummy[j];
+			int include=INT_MIN;
+			if(i+1<=j)
+				include=price[i]+dp[j-i-1];
+			dp[j]=max(exclude,include);
+		}
+		dummy=dp;
+	}
+	return dummy[n];
+	*/
+
+	//Space optimization TC=O(n*n) SC=O(n) : 1 dp arrays
+	vector<int> dummy(n+1,0);
+	for(int j=1;j<=n;j++)
+		dummy[j]=j*price[0];
+	for(int i=1;i<n;i++)
+	{
+		for(int j=1;j<=n;j++)
+		{
+			int exclude=dummy[j];
+			int include=INT_MIN;
+			if(i+1<=j)
+				include=price[i]+dummy[j-i-1];
+			dummy[j]=max(exclude,include);
+		}
+	}
+	return dummy[n];
+
+
+}
