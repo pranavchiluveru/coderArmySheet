@@ -1,65 +1,84 @@
-#include<bits/stdc++.h>
-/*Recursion TC=O(2^n) Sc=O(n)
-int find(int i,int prev,int arr[],int n)
-{
-    if(i==n)return 0;
-    if(arr[i]>arr[prev]||prev==-1)
+class Solution {
+public:
+    /*Recursion TC=O(2^n) SC=O(n)
+    int find(int i,int prev,vector<int>& nums1,int n)
     {
-        return max(1+find(i+1,i,arr,n),find(i+1,prev,arr,n));
-    }
-    return find(i+1,prev,arr,n,dp);
-}
-*/
-/*Dp-Memoization TC=O(n*n) Sc=O(n*n)
-int find(int i,int prev,int arr[],int n,vector<vector<int>> &dp)
-{
-    if(i==n)return 0;
-    if(dp[i][prev+1]!=-1)return dp[i][prev+1];
-    if(prev==-1||arr[i]>arr[prev])
-    {
-        return dp[i][prev+1]=max(1+find(i+1,i,arr,n,dp),find(i+1,prev,arr,n,dp));//since we cant have prev as -1 we add +1
-    }
-    return dp[i][prev+1]=find(i+1,prev,arr,n,dp);
-}
-*/
-int longestIncreasingSubsequence(int arr[], int n)
-{
-    // Write Your Code here.
-    //find(0,-1) indicate length of LIS starting at index 0 with previous index as -1
-    //find(3,1) indicate what is the length of LIS starting at index 3 with previous index as 1
-    //return find(0,-1,arr,n);
-
-    //vector<vector<int>> dp(n+1,vector<int>(n+1,0));
-    //return find(0,-1,arr,n,dp);
-
-    /*DP -Tabulation TC=O(n^2) sc=O(n^2)
-    for(int i=n-1;i>=0;i--)
-    {
-        for(int prev=i-1;prev>=-1;prev--)
+        if(i==n)return 0;
+        int x=0,y=0;
+        if(prev==-1||nums1[prev]<nums1[i])
         {
-            if(prev==-1||arr[i]>arr[prev])
-            {
-                dp[i][prev+1]=max(1+dp[i+1][i+1],dp[i+1][prev+1]);//since we cant have prev as -1 we add +1
-            }
-            else
-                dp[i][prev+1]=dp[i+1][prev+1];
+            x=1+find(i+1,i,nums1,n);
         }
+        y=find(i+1,prev,nums1,n);
+        return max(x,y);
     }
-    return dp[0][-1+1];
     */
-
-    //Using Binary search lower_bound which finds index of ele which is equal or greater than req ele
-    //tc=O(n*log(n)) sc=O(n)
-    vector<int> temp;//note this doesnot contain LIS its just for length
-    temp.push_back(arr[0]);
-    for(int i=1;i<n;i++)
+    /*DP-Top Down -Memoization TC=O(n2) SC=O(n2)
+    int find(int i,int prev,vector<int>& nums1,int n,vector<vector<int>> &dp)
     {
-        if(arr[i]>temp.back())
-            temp.push_back(arr[i]);
-        else{
-            int index=lower_bound(temp.begin(),temp.end(),arr[i])-temp.begin();//takes log(n) time binary search
-            temp[index]=arr[i];
+        if(i==n)return 0;
+        if(dp[i][prev+1]!=-1)return dp[i][prev+1];
+        int x=0,y=0;
+        if(prev==-1||nums1[prev]<nums1[i])
+        {
+            x=1+find(i+1,i,nums1,n,dp);
         }
+        y=find(i+1,prev,nums1,n,dp);
+      
+        return dp[i][prev+1]=max(x,y);
     }
-    return temp.size();
-}
+    */
+    int lengthOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        //vector<vector<int>> dp(n,vector<int>(n+1,-1));
+        //return find(0,-1,nums,n,dp);
+
+        /*DP-Bottom Up -Tabulation TC=O(n2) SC=O(n2)
+        vector<vector<int>> dp(n+1,vector<int>(n+1,0));
+        for(int i=n-1;i>=0;i--)
+        {
+            for(int prev=i-1;prev>=-1;prev--)
+            {
+                if(prev==-1||nums[prev]<nums[i])
+                {
+                    dp[i][prev+1]=max(1+dp[i+1][i+1],dp[i+1][prev+1]);
+                }
+                else
+                    dp[i][prev+1]=dp[i+1][prev+1];
+            }
+        }
+        return dp[0][-1+1];
+        */
+        /*Space optimization TC=O(n2) SC=O(n)
+        vector<int> next(n+1,0);
+        vector<int> dp(n+1,0);
+        for(int i=n-1;i>=0;i--)
+        {
+            for(int prev=i-1;prev>=-1;prev--)
+            {
+                if(prev==-1||nums[prev]<nums[i])
+                    dp[prev+1]=max(1+next[i+1],next[prev+1]);
+                else
+                    dp[prev+1]=next[prev+1];
+            }
+            next=dp;
+        }
+        return dp[0];
+        */
+
+        //optimal way TC=O(nlogn) SC=O(n)
+        vector<int> temp;
+        temp.push_back(nums[0]);
+        for(int i=1;i<n;i++)
+        {
+            if(temp.back()<nums[i])
+                temp.push_back(nums[i]);
+            else
+            {
+                int index=lower_bound(temp.begin(),temp.end(),nums[i])-temp.begin();
+                temp[index]=nums[i];
+            }
+        }
+        return temp.size();
+    }
+};
